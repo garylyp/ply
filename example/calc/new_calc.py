@@ -10,18 +10,25 @@
 import sys
 sys.path.insert(0, "../..")
 
-tokens = (
-    'NAME', 'NUMBER', 'SQRT'
-)
+# Define reserve keywords (e.g. sqrt operator)
+reserved = {
+    'sqrt' : 'SQRT'
+}
+
+tokens = ['NAME', 'NUMBER'] + list(reserved.values())
 
 literals = ['=', '+', '-', '*', '/']
 
 # Tokens
 
-t_SQRT = r'sqrt'
+def t_NAME(t):
+    r'[a-zA-Z_][a-zA-Z0-9_]*'
 
-# Use negative lookahead to exclude the keyword negative from name tokens
-t_NAME = r'(?!sqrt)[a-zA-Z_][a-zA-Z0-9_]*'
+    # Check for reserve keywords 
+    # (this is where sqrt gets registered as a SQRT token)
+    if t.value in reserved:
+        t.type = reserved.get(t.value)
+    return t
 
 
 def t_NUMBER(t):
@@ -96,6 +103,7 @@ def p_expression_binop(p):
 
 def p_expression_sqrt(p):
     "expression : SQRT expression"
+    # Throws an error if operand is negative
     if p[2] < 0:
         print("Cannot perform sqrt on negative number")
         return
