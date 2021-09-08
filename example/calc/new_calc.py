@@ -1,12 +1,26 @@
-# -----------------------------------------------------------------------------
-# IE1_LIM_YAN_PENG_GARY.py
-#
-# A simple calculator with variables that accepts prefix expressions.   
-#
-# Name: Lim Yan Peng, Gary
-# Student Number: A0189806M
-# -----------------------------------------------------------------------------
+"""
+-----------------------------------------------------------------------------
+Name: Lim Yan Peng, Gary
+Student Number: A0189806M
 
+To run, execute the following command:
+python IE1_LIM_YAN_PENG_GARY.py
+
+Description:
+A simple calculator with variables that accepts prefix expressions.   
+
+Examples of prefix notations:
+= A 1           --> Assign value 1 to A
+= A * 2 2       --> Assign value 2 * 2 = 4 to A
+* - 5 2 3       --> (5-2)*3
+
+To avoid ambiguity between subtraction and negative numbers,
+any '-' joined to a number will be interpreted as a 
+negative integer:
+/ + -2 4 -4     --> (-2 + 4) / (-4)
+
+-----------------------------------------------------------------------------
+"""
 import sys
 sys.path.insert(0, "../..")
 
@@ -32,7 +46,9 @@ def t_NAME(t):
 
 
 def t_NUMBER(t):
-    r'\d+'
+    r'\-?\d+'
+
+    # Numbers now contain an option - sign to denote negative numbers
     t.value = int(t.value)
     return t
 
@@ -66,8 +82,8 @@ precedence = (
 names = {}
 
 def p_statement_assign(p):
-    'statement : NAME "=" expression'
-    names[p[1]] = p[3]
+    'statement : "=" NAME expression'
+    names[p[2]] = p[3]
 
 
 def p_statement_expr(p):
@@ -103,7 +119,7 @@ def p_expression_binop(p):
 
 def p_expression_sqrt(p):
     "expression : SQRT expression"
-    # Throws an error if operand is negative
+    # Print an error message if operand is negative
     if p[2] < 0:
         print("Cannot perform sqrt on negative number")
         return
